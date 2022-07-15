@@ -1,32 +1,17 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted, watchEffect } from 'vue';
 import CreateProduct from './CreateProduct.vue';
-import CannotDelete from './CannotDelete.vue';
-import DeleteOk from './DeleteOk.vue';
 import axios from 'axios';
+import PopupModal from './PopupModal.vue';
 
 let products = reactive([]);
-
-let companiesMap = computed(() => {
-    return props.companies.reduce(
-        (prev, cur) => (
-            prev[cur.ID] = cur.name
-        ), {});
-});
-
+let showCreate = ref(false);
 let companyID = ref(0);
 let isRaw = ref(2);
-let curModal = ref(0);
 
 let props = defineProps([
     'companies'
 ]);
-
-const routes = 
-{
-    '/create': {name: 'Home', component: CreateProduct}
-};
-
 
 watchEffect(async () => {
     await axios.get('http://localhost:8000/products')
@@ -44,6 +29,7 @@ async function getProduct(){
     console.log('product refreshing...');
     await axios.get('http://localhost:8000/products')
     .then(function(response) {
+        Object.assign(products, []);
         products.push(response.data[0]);
         console.log(response.data[0]);
     })
@@ -95,22 +81,13 @@ function deleteProduct(id){
         .then(function(response) {
             console.log(response.data);
             getProduct();
-            curModal = DeleteOk;
-            console.log(curModal);
         })
-        .catch(function (error) {            
+        .catch(function (error) {   
+                     
             console.log(error);
-            curModal = CannotDelete;
-            console.log(curModal);
         }).then(function() {
         
     });
-}
-
-let showCreate = ref(false);
-
-function showEditForm(id){
-
 }
 
 function print(){
@@ -246,8 +223,7 @@ function setActionPointer(id, action){
         </template>
     </ul>
 
-    <!-- <component :is="curModal" /> -->
-    <CannotDelete/>
+    <!-- <PopupModal /> -->
 
 </template>
 
