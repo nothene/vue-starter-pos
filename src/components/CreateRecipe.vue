@@ -2,52 +2,90 @@
 import { ref, reactive, computed, watch, onMounted, watchEffect } from 'vue';
 import axios from 'axios';
 
+let recipeDetail = {
+    ID: 1,
+    qty_needed: 0,
+}
+
 let recipeForm = reactive({
     company_id: 1,
     code: '',
     name: '',
     notes: '',
-    ingredients: []
+    ingredients: [{
+        ID: 1,
+        qty_needed: 0,
+    }]
 });
 
 let recipes = reactive([]);
 
-let prop = defineProps([
-    'companies'
+let props = defineProps([
+    'companies', 'products'
 ])
 
 watchEffect(async () => {
     await axios.get('http://localhost:8000/recipes')
         .then(function(response) {
             recipes.push(response.data);
-            console.log(response.data);
+            //console.log(response.data);
+            console.log(props.products);
         })
         .catch(function (error) {
             console.log(error);
         });      
-    }
+    }   
 );
 
-function createRecipe(){
-    recipeForm.ingredients
-    axios.post(`http://localhost:8000/recipes`, recipeForm)
-    .then(function(response) {
-        console.log(response.data);
-        alert('Product created successfully');
-        Object.assign(recipeForm, {
-            company_id: 1,
-            code: '',
-            name: '',
-            notes: '',
-            ingredients: []
-        });
-    })
-    .catch(function (error) {
-        console.log(error);
-        alert(error);
-    }).then(function() {
+function checkIngredientUnique(){
+    let a = {};
+    let arr = recipeForm.ingredients;
+
+    for(var e in arr){
+        //console.log(e);
+    }
     
+    return true;
+}
+
+async function createRecipe(){
+    console.log('unique', checkIngredientUnique());
+    // await axios.post(`http://localhost:8000/recipes`, recipeForm)
+    // .then(function(response) {
+    //     console.log(response.data);
+    //     alert('Product created successfully');
+    //     Object.assign(recipeForm, {
+    //         company_id: 1,
+    //         code: '',
+    //         name: '',
+    //         notes: '',
+    //         ingredients: [{
+            //         ID: 1,
+            //         qty_needed: 0,
+            //    }]
+    //     });
+    // })
+    // .catch(function (error) {
+    //     console.log(error);
+    //     alert(error);
+    // }).then(function() {
+    
+    // });
+}
+
+function print(){
+    
+}
+
+function addIngredient(){
+    recipeForm.ingredients.push({
+        ID: 1,
+        qty_needed: 0,
     });
+}
+
+function popIngredient(){
+    recipeForm.ingredients.pop();
 }
 
 </script>
@@ -59,7 +97,7 @@ function createRecipe(){
             <div class="mb-3">
                 <label class="form-label">Company</label>
                 <select class="form-select" v-model="recipeForm.company_id">
-                    <option v-for="(value, index) in prop.companies" :key="value.ID" :value="value.ID">
+                    <option v-for="(value, index) in props.companies" :key="value.ID" :value="value.ID">
                         {{value.name}}
                     </option>
                 </select>
@@ -78,14 +116,19 @@ function createRecipe(){
             </div>
             <div class="mb-3">
                 <label class="form-label">Add Ingredients</label>
-                <select class="form-select" v-model="recipeForm.company_id">
-                    <option v-for="(value, index) in prop.companies" :key="value.ID" :value="value.ID">
-                        {{value.name}}
-                    </option>
-                </select>
-                <button class="btn btn-primary">Add Ingredient</button>
-            </div>            
-            <button type="submit" class="btn btn-primary" @click="createRecipe(); $emit('refreshRecipe')">Submit</button>            
+                <div v-for="(value, index) in recipeForm.ingredients">
+                    <select class="form-select" v-model="recipeForm.ingredients[index].ID">
+                        <option v-for="(value2, index2) in props.products" :key="value2.ID" :value="value2.ID">
+                            {{value2.name}} {{'(' + value2.uom_name + ')'}}
+                        </option>
+                    </select>
+                    <input type="number" class="form-control" v-model="recipeForm.ingredients[index].qty_needed">
+                    <span>{{recipeForm.ingredients[index]}}</span>
+                </div>
+                <button class="btn btn-primary" @click="addIngredient()">Add Ingredient</button>
+                <button class="btn btn-primary" @click="addIngredient()">Add Ingredient</button>
+            </div>        
+            <button type="submit" class="btn btn-primary" @click.prevent="createRecipe(); $emit('refreshRecipe')">Submit</button>
         </div>
     </div>
 </template>

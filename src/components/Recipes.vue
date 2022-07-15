@@ -9,7 +9,7 @@ let companies = reactive([]);
 let showCreate = ref(false);
 
 let props = defineProps([
-    'companies'
+    'companies', 'products'
 ]);
 
 let actionPointer = reactive({
@@ -73,6 +73,17 @@ function getRecipeDetail(id){
     });
 }
 
+function getRawMaterials(){
+    if(props.products){
+        let a = props.products;
+        //console.log('here', a.filter(x => x.is_raw_material));
+        a = a.filter(x => x.is_raw_material);
+        return a;
+    } else {
+        return [];
+    }
+}
+
 </script>
 
 <template>
@@ -97,7 +108,7 @@ function getRecipeDetail(id){
         <div class="row align-items-center justify-content-left bg-light p-1">
             <div class="col">
                 <div class="collapse" id="collapse1">
-                    <CreateRecipe :companies="props.companies" @refresh-recipe="getRecipe()"/>
+                    <CreateRecipe :companies="props.companies" :products="getRawMaterials()"/>
                 </div>
             </div>
         </div>
