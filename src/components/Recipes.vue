@@ -60,6 +60,18 @@ function getPriceList(id){
     }); 
 }
 
+function deleteRecipe(id){
+    axios.delete(`http://localhost:8000/recipes/${id}`)
+        .then(function(response) {
+            console.log(response.data);
+        })
+        .catch(function (error) {
+            console.log(error);
+        }).then(function() {
+        
+    });     
+}
+
 function getRecipeDetail(id){
     axios.get(`http://localhost:8000/recipes/${id}`)
         .then(function(response) {
@@ -122,10 +134,10 @@ function getRawMaterials(){
                     </span>
                 </div>
                 <div class="col">
-                    <a class="btn btn-primary m-1" @click="getRecipeDetail(value.ID); setActionPointer(value.ID, 'recipe')">Show Recipe</a>
+                    <a class="btn btn-primary m-1" @click="getRecipeDetail(value.ID); setActionPointer(value.ID, 'recipe')">Show Details</a>
                     <a class="btn btn-primary m-1" @click="setActionPointer(value.ID, 'edit')">Edit</a>
                     
-                    <a class="btn btn-danger m-1" @click="setActionPointer(value.ID, 'delete')">Delete</a>
+                    <a class="btn btn-danger m-1" @click="deleteRecipe(value.ID)">Delete</a>
                 </div>
             </div>
         </li>

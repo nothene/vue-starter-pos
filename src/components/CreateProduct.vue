@@ -108,7 +108,7 @@ function createProduct(){
                     </option>
                 </select>
             </div>    
-            <button type="submit" class="btn btn-primary" @click="createProduct(); $emit('refreshProduct')">Submit</button>            
+            <button type="submit" class="btn btn-primary" @click.prevent="createProduct(); $emit('refreshProduct')">Submit</button>            
         </div>
     </div>
 </template>
