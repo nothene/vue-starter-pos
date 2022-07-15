@@ -1,16 +1,26 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted, watchEffect } from 'vue';
-import CreateProduct from './CreateProduct.vue';
+import CreateRecipe from './CreateRecipe.vue';
 import axios from 'axios';
 
 let recipes = reactive([]);
+let recipeDetail = reactive({});
 let companies = reactive([]);
+let showCreate = ref(false);
 
-const routes = 
-{
-    '/create': {name: 'Home', component: CreateProduct}
-};
+let props = defineProps([
+    'companies'
+]);
 
+let actionPointer = reactive({
+    id: 0,
+    action: ''
+});
+
+function setActionPointer(id, action){
+    actionPointer.id = id;
+    actionPointer.action = action;
+}
 
 watchEffect(async () => {
     await axios.get('http://localhost:8000/recipes')
@@ -50,9 +60,10 @@ function getPriceList(id){
     }); 
 }
 
-function getRecipe(id){
+function getRecipeDetail(id){
     axios.get(`http://localhost:8000/recipes/${id}`)
         .then(function(response) {
+            recipeDetail[id] = response.data;
             console.log(response.data);
         })
         .catch(function (error) {
@@ -62,16 +73,34 @@ function getRecipe(id){
     });
 }
 
-function print(){
-    console.log(recipes[0][1]);
-}
-
 </script>
 
 <template>
-    <div class="container-fluid mb-2 p-2 border">
-        Filter by: 
-        <button class="btn btn-primary" @click="print">Click</button>
+    <div class="container-fluid mb-3">
+        <div class="row align-items-center p-3 bg-light">
+            <div class="lead col" style="">
+                Recipes
+            </div>      
+            <div class="col-2">            
+                <div v-if="!showCreate">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" 
+                    aria-expanded="false" aria-controls="collapse1" @click="showCreate = !showCreate;">Create Recipe</button>
+                </div>
+                <div v-else-if="showCreate">
+                    <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" 
+                    aria-expanded="false" aria-controls="collapse1" @click="showCreate = !showCreate;">
+                        Close
+                    </button>
+                </div>
+            </div>            
+        </div>
+        <div class="row align-items-center justify-content-left bg-light p-1">
+            <div class="col">
+                <div class="collapse" id="collapse1">
+                    <CreateRecipe :companies="props.companies" @refresh-recipe="getRecipe()"/>
+                </div>
+            </div>
+        </div>
     </div>
     <ul class="list-group">
         <li v-for="(value, index) in recipes[0]" :key="value.ID" class="list-group-item">
@@ -80,17 +109,12 @@ function print(){
                     <span style="font-weight: normal" class="lead">
                         {{value.name}}    
                     </span>
-                    <div>
-                        <label style="color: black">Product Type: </label>{{value.is_raw_material ? " Raw Material" : " Sellable Product"}}
-                    </div>
-                    <div>
-                        <label>Unit of measure: </label>{{" " + value.uom_name}}
-                    </div>
                 </div>
                 <div class="col">
-                    <a class="btn btn-primary m-1" @click="getDetail(value.ID)">Toggle Detail</a>
-                    <a class="btn btn-primary m-1" @click="getPriceList(value.ID)">Edit</a>
-                    <a class="btn btn-danger m-1" @click="getPriceList(value.ID)">Delete</a>
+                    <a class="btn btn-primary m-1" @click="getRecipeDetail(value.ID); setActionPointer(value.ID, 'recipe')">Show Recipe</a>
+                    <a class="btn btn-primary m-1" @click="setActionPointer(value.ID, 'edit')">Edit</a>
+                    
+                    <a class="btn btn-danger m-1" @click="setActionPointer(value.ID, 'delete')">Delete</a>
                 </div>
             </div>
         </li>

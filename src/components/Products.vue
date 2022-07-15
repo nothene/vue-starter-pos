@@ -4,10 +4,26 @@ import CreateProduct from './CreateProduct.vue';
 import axios from 'axios';
 import PopupModal from './PopupModal.vue';
 
+let productForm = reactive({
+    company_id: 1,
+    code: '',
+    name: '',
+    color: '',
+    is_raw_material: true,
+    is_active: true,
+    uom_name: '',
+    recipe_id: 1  
+});
+
+let recipeForm = reactive([]);
 let products = reactive([]);
 let showCreate = ref(false);
 let companyID = ref(0);
 let isRaw = ref(2);
+let actionPointer = reactive({
+    id: 0,
+    action: ''
+});
 
 let props = defineProps([
     'companies'
@@ -17,7 +33,7 @@ watchEffect(async () => {
     await axios.get('http://localhost:8000/products')
         .then(function(response) {
             products.push(response.data);
-            console.log(response.data);
+            //console.log(response.data);
         })
         .catch(function (error) {
             console.log(error);
@@ -31,7 +47,7 @@ async function getProduct(){
     .then(function(response) {
         Object.assign(products, []);
         products.push(response.data[0]);
-        console.log(response.data[0]);
+        //console.log(response.data[0]);
     })
     .catch(function (error) {
         console.log(error);
@@ -43,7 +59,7 @@ async function getProduct(){
 function getDetail(id){
     axios.get(`http://localhost:8000/products/${id}`)
         .then(function(response) {
-            console.log(response.data);
+            //console.log(response.data);
         })
         .catch(function (error) {
             console.log(error);
@@ -55,7 +71,7 @@ function getDetail(id){
 function getPriceList(id){
     axios.get(`http://localhost:8000/price?product_id=${id}`)
         .then(function(response) {
-            console.log(response.data);
+            //console.log(response.data);
         })
         .catch(function (error) {
             console.log(error);
@@ -67,7 +83,8 @@ function getPriceList(id){
 function getRecipe(id){
     axios.get(`http://localhost:8000/recipes/${id}`)
         .then(function(response) {
-            console.log(response.data);
+            //console.log(response.data);
+            Object.assign(recipeForm, response.data);
         })
         .catch(function (error) {
             console.log(error);
@@ -90,14 +107,6 @@ function deleteProduct(id){
     });
 }
 
-function print(){
-}
-
-let actionPointer = reactive({
-    id: 0,
-    action: ''
-});
-
 function setActionPointer(id, action){
     actionPointer.id = id;
     actionPointer.action = action;
@@ -114,7 +123,7 @@ function setActionPointer(id, action){
             <div class="col-2">            
                 <div v-if="!showCreate">
                     <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" 
-                    aria-expanded="false" aria-controls="collapse1" @click="showCreate = !showCreate; print()">Create Product</button>
+                    aria-expanded="false" aria-controls="collapse1" @click="showCreate = !showCreate;">Create Product</button>
                 </div>
                 <div v-else-if="showCreate">
                     <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" 
