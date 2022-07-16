@@ -22,18 +22,24 @@ let productPrices = reactive({});
 let productOnhands = reactive({});
 
 let showCreate = ref(false);
-let companyID = ref(0);
-let isRaw = ref(2);
-let actionPointer = reactive({
-    id: 0,
-    action: ''
+let filters = reactive({
+    companyID: 0,
+    isRaw: 2,
 });
 
 let props = defineProps([
     'companies'
 ]);
 
-let companiesMap = reactive({});
+//let companiesMap = reactive({});
+let companiesMap = computed(() => {
+    let arr = JSON.parse(JSON.stringify(props.companies));
+    let a = {};
+    for(var i = 0; i < arr.length; i++){
+        a[arr[i].ID] = arr[i].name;
+    }    
+    return a;
+})
 
 watchEffect(async () => {
     await axios.get('http://localhost:8000/products')
@@ -47,9 +53,10 @@ watchEffect(async () => {
     }
 );
 
-function getDetails(id){
-    axios.get(`http://localhost:8000/products/${id}`)
+async function getDetails(id){
+    await axios.get(`http://localhost:8000/products/${id}`)
         .then(function(response) {
+            productPrices['fetched'] = true;
             productPrices[id] = response.data[1];
             productOnhands[id] = response.data[2];
             console.log(productOnhands[id]);
@@ -74,9 +81,8 @@ function deleteProduct(id){
     });
 }
 
-function setActionPointer(id, action){
-    actionPointer.id = id;
-    actionPointer.action = action;
+function print(){
+    console.log(companiesMap.value);
 }
 
 </script>
@@ -113,12 +119,12 @@ function setActionPointer(id, action){
         <div class="p-2">
             <div class="mb-1">
                 Filter by:
-                <span v-if="companyID > 0">Company </span>
-                <span v-if="isRaw < 2">Rawness</span>
+                <span v-if="filters['companyID'] > 0">Company </span>
+                <span v-if="filters['isRaw'] < 2">Rawness</span>
             </div>
             <div class="p-1">
                 <span>Company Name:</span>
-                <select class="form-select" v-model="companyID">
+                <select class="form-select" v-model="filters['companyID']">
                     <option selected value=0>No Filter</option>
                     <option v-for="(value, index) in companies" :key="value.ID" :value="value.ID">
                         {{value.name}}
@@ -127,7 +133,7 @@ function setActionPointer(id, action){
             </div>
             <div class="p-1">
                 <span>Is Raw Product:</span>
-                <select class="form-select" v-model="isRaw">
+                <select class="form-select" v-model="filters['isRaw']">
                     <option selected value=2>No Filter</option>
                     <option value=0>No</option>
                     <option value=1>Yes</option>
@@ -138,7 +144,7 @@ function setActionPointer(id, action){
 
     <ul class="list-group">
         <template v-for="(value, index) in products[0]" :key="value.ID" >
-            <li v-if="(companyID == 0 || companyID == value.company_id) && (value.is_raw_material == isRaw || (isRaw == 2 ? true : false))" class="list-group-item">
+            <li v-if="(filters['companyID'] == 0 || filters['companyID'] == value.company_id) && (value.is_raw_material == filters['isRaw'] || (filters['isRaw'] == 2 ? true : false))" class="list-group-item">
                 <div class="row align-items-center">
                     <div class="row">
                         <div class="col">
@@ -160,18 +166,24 @@ function setActionPointer(id, action){
                         </div>
                         <div class="col">
                             <a class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#onhand' + value.ID" @click="getDetails(value.ID)">Stocks Onhand</a>
-                            <button class="btn btn-primary m-1" :style="{disabled: (value.is_raw_material == true)}"
-                                data-bs-toggle="collapse" :data-bs-target="'#price' + value.ID" @click="getDetails(value.ID)">Price List</button>
+                            <button class="btn btn-primary m-1" :class="{disabled: (value.is_raw_material == true)}"
+                                data-bs-toggle="collapse" :data-bs-target="'#priceList' + value.ID" @click="getDetails(value.ID); print()">Price List & Publish</button>                            
+                            <!-- <button class="btn btn-primary m-1" :class="{disabled: (value.is_raw_material == true)}"
+                                data-bs-toggle="collapse" :data-bs-target="'#pricePublish' + value.ID">Price Publish</button> -->
                             <a class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#edit' + value.ID">Edit</a>
                             <a class="btn btn-danger m-1" @click="deleteProduct(value.ID)" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Delete</a>
                         </div>
                     </div>
                     <div class="row align-items-center">
                         <div class="collapse" :id="'onhand' + value.ID">
-                            <StockOnhands :stockOnhands="productOnhands[value.ID]"/>
+                            <template v-if="productOnhands[value.ID]">
+                                <StockOnhands :stockOnhands="productOnhands[value.ID]" :companiesMap="companiesMap"/>
+                            </template>
                         </div>
-                        <div class="collapse" :id="'price' + value.ID">
-                            <Prices :priceList="productPrices[value.ID]"/>
+                        <div class="collapse" :id="'priceList' + value.ID">
+                            <template v-if="productPrices[value.ID]">
+                                <Prices :priceList="productPrices[value.ID]" :productId="value.ID" :isRaw="value.is_raw_material" :companiesMap="companiesMap"/>
+                            </template>
                         </div>
                         <div class="collapse" :id="'edit' + value.ID">
                             Edit

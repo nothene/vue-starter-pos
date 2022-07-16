@@ -14,10 +14,9 @@ let companies = reactive([]);
 let products = reactive([]);
 const routes = 
 {
-    '/': {name: 'Home', component: Home},
-    '/products': {name: 'Products', component: Products},
+    //'/': {name: 'Home', component: Home},
+    '/': {name: 'Products', component: Products},
     '/recipes':  {name: 'Recipes', component: Recipes},
-    '/prices':  {name: 'Prices', component: Prices},
     '/production':  {name: 'Production', component: Production},
     '/purchase':  {name: 'Purchase', component: Purchase},
     '/sell':  {name: 'Sell', component: Sell},
