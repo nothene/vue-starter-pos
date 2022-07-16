@@ -1,10 +1,99 @@
-<script>
+<script setup>
+import { ref, reactive, computed, watch, onMounted, watchEffect } from 'vue';
+
+let props = defineProps([
+    'companiesMap',
+    'products',
+]);
 
 let purchaseForm = reactive({
     company_id: 1,
     transaction_date: '',
     supplier_name: '',
-    details: []
+    is_cancelled: false,
+    details: [],
+    notes: ''
 });
 
+let rawMaterials = computed(() => {
+    if(props.products){
+        let arr = JSON.parse(JSON.stringify(props.products));
+        let a = [];
+        for(var i = 0; i < arr.length; i++){
+            if(arr[i].is_raw_material){
+                a.push(arr[i]);
+            }
+        }    
+        return a;
+    }
+    return null;
+});
+
+function addProduct(){
+    purchaseForm['details'].push({
+        raw_material_id: 1,
+        qty: 0,
+        // in fractions, take care to convert
+        disc_1: 0,
+        disc_2: 0
+    });
+}
+
+function popProduct(){
+    purchaseForm['details'].pop();
+}
+
 </script>
+
+<template>
+    <div class="card m-2">
+        <div class="card-body">
+            <div class="card-title">Create Purchase</div>
+            <div class="mb-3">
+                <label class="form-label">Company</label>
+                <select class="form-select" v-model="purchaseForm.company_id">
+                    <option v-for="(value, index) in companiesMap" :key="index" :value="index">
+                        {{value}}
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Purchase Date</label>           
+                <input type="date" class="form-control" v-model="purchaseForm['transaction_date']">        
+            </div>               
+            <div class="mb-3">
+                <label class="form-label">Supplier Name</label>
+                <input type="text" class="form-control" v-model="purchaseForm['supplier_name']">
+            </div>            
+            <div class="mb-3">
+                <label class="form-label">Is Cancelled</label>
+                <select class="form-select" v-model="purchaseForm['is_cancelled']">
+                    <option :value="true" selected>Yes</option>
+                    <option :value="false" selected>No</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <input type="text" class="form-control" v-model="purchaseForm['notes']">
+            </div>
+            <div class="mb-3">
+                    <label class="form-label">Add Ingredients</label>
+                    <div v-for="(value, index) in purchaseForm['details']">
+                        <div class="mb-2">
+                            <select class="form-select" v-model="purchaseForm['details'][index].ID">
+                                <option v-for="(value2, index2) in rawMaterials" :key="value2.ID" :value="value2.ID">
+                                    {{value2.name}} {{'(' + value2.uom_name + ')'}}
+                                </option>
+                            </select>
+                            <input type="number" class="form-control" v-model="purchaseForm['details'][index].qty">
+                        </div>
+                    </div>
+                    <span>{{purchaseForm['details']}}</span>
+                    <div>
+                        <button class="btn btn-primary me-2" @click="addProduct()">Add Ingredient</button>
+                        <button class="btn btn-danger" @click="popProduct()">Remove Last Ingredient</button>
+                    </div>
+                </div>                                     
+        </div>
+    </div>
+</template>

@@ -32,8 +32,10 @@ let props = defineProps([
     'companies'
 ]);
 
-//let companiesMap = reactive({});
 let companiesMap = computed(() => {
+    if(!props.companies){
+        return null;
+    }    
     let arr = JSON.parse(JSON.stringify(props.companies));
     let a = {};
     for(var i = 0; i < arr.length; i++){
