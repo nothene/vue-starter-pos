@@ -12,6 +12,8 @@ import axios from 'axios';
 
 let companies = reactive([]);
 let products = reactive([]);
+let recipes = reactive([]);
+
 const routes = 
 {
     //'/': {name: 'Home', component: Home},
@@ -37,7 +39,7 @@ function print(){
 }
 
 watchEffect(async () => { 
-    axios.get('http://localhost:8000/companies').then(
+    await axios.get('http://localhost:8000/companies').then(
         function(response){
             companies.push(response.data);
             //console.log(response.data);
@@ -45,17 +47,42 @@ watchEffect(async () => {
     ).catch(function(error){
         console.log(error);
         alert(error);
-    }).then(function(response){
-        axios.get('http://localhost:8000/products').then(
-            function(response){
-                products.push(response.data);
-            }
-        ).catch(function(error){
-            console.log(error);
-        })
-    }
-    )
+    })
 });
+
+watchEffect(async () => {
+    await axios.get('http://localhost:8000/products').then(
+        function(response){
+            products.push(response.data);
+        }
+    ).catch(function(error){
+        console.log(error);
+        alert(error);
+    })
+})
+
+watchEffect(async () => { 
+    await axios.get('http://localhost:8000/companies').then(
+        function(response){
+            companies.push(response.data);
+            //console.log(response.data);
+        }
+    ).catch(function(error){
+        console.log(error);
+        alert(error);
+    })
+});
+
+watchEffect(async () => {
+    await axios.get('http://localhost:8000/recipes').then(
+        function(response){
+            recipes.push(response.data);
+        }
+    ).catch(function(error){
+        console.log(error);
+        alert(error);
+    })
+})
 
 </script>
 
@@ -75,7 +102,7 @@ watchEffect(async () => {
 
     <!-- <button class="btn btn-primary" @click="print">Click</button> -->
 
-    <component :is="currentView" :companies="companies[0]" :products="products[0]"/>
+    <component :is="currentView" :companies="companies[0]" :products="products[0]" :recipes="recipes[0]"/>
   </div>
 </template>
 

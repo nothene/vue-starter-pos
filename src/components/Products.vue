@@ -2,6 +2,7 @@
 import { ref, reactive, computed, watch, onMounted, watchEffect } from 'vue';
 import CreateProduct from './CreateProduct.vue';
 import StockOnhands from './StockOnhands.vue';
+import EditProduct from './EditProduct.vue'
 import axios from 'axios';
 import PopupModal from './PopupModal.vue';
 import Prices from './Prices.vue';
@@ -186,8 +187,7 @@ function print(){
                             </template>
                         </div>
                         <div class="collapse" :id="'edit' + value.ID">
-                            Edit
-                            <!-- <EditRecipe :companies="props.companies" :products="getRawMaterials()" :recipeForm="value" :details="recipeDetails[value.ID]"/> -->
+                            <!-- <EditProduct :companies="props.companies" :products="getRawMaterials()" :recipeForm="value" :details="recipeDetails[value.ID]"/> -->
                         </div>                        
                     </div>                
                 </div>

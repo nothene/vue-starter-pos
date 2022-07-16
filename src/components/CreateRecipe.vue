@@ -36,17 +36,6 @@ watchEffect(async () => {
     }   
 );
 
-function checkIngredientUnique(){
-    let a = {};
-    let arr = recipeForm.ingredients;
-
-    for(var e in arr){
-        //console.log(e);
-    }
-    
-    return true;
-}
-
 function createRecipe(){
     console.log(recipeForm);
     axios.post('http://localhost:8000/recipes', recipeForm)
@@ -98,7 +87,7 @@ function popIngredient(){
                 <div class="mb-3">
                     <label class="form-label">Company</label>
                     <select class="form-select" v-model="recipeForm.company_id">
-                        <option v-for="(value, index) in props.companies" :key="value.ID" :value="value.ID">
+                        <option v-for="(value, index) in companies" :key="value.ID" :value="value.ID">
                             {{value.name}}
                         </option>
                     </select>
