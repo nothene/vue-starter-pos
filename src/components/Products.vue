@@ -1,8 +1,10 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted, watchEffect } from 'vue';
 import CreateProduct from './CreateProduct.vue';
+import StockOnhands from './StockOnhands.vue';
 import axios from 'axios';
 import PopupModal from './PopupModal.vue';
+import Prices from './Prices.vue';
 
 let productForm = reactive({
     company_id: 1,
@@ -15,8 +17,10 @@ let productForm = reactive({
     recipe_id: 1  
 });
 
-let recipeForm = reactive([]);
 let products = reactive([]);
+let productPrices = reactive({});
+let productOnhands = reactive({});
+
 let showCreate = ref(false);
 let companyID = ref(0);
 let isRaw = ref(2);
@@ -28,6 +32,8 @@ let actionPointer = reactive({
 let props = defineProps([
     'companies'
 ]);
+
+let companiesMap = reactive({});
 
 watchEffect(async () => {
     await axios.get('http://localhost:8000/products')
@@ -41,66 +47,27 @@ watchEffect(async () => {
     }
 );
 
-async function getProduct(){
-    console.log('product refreshing...');
-    await axios.get('http://localhost:8000/products')
-    .then(function(response) {
-        Object.assign(products, []);
-        products.push(response.data[0]);
-        //console.log(response.data[0]);
-    })
-    .catch(function (error) {
-        console.log(error);
-    }).then(function() {
-    
-    });         
-}
-
-function getDetail(id){
+function getDetails(id){
     axios.get(`http://localhost:8000/products/${id}`)
         .then(function(response) {
-            //console.log(response.data);
+            productPrices[id] = response.data[1];
+            productOnhands[id] = response.data[2];
+            console.log(productOnhands[id]);
         })
         .catch(function (error) {
             console.log(error);
         }).then(function() {
         
     }); 
-}
-
-function getPriceList(id){
-    axios.get(`http://localhost:8000/price?product_id=${id}`)
-        .then(function(response) {
-            //console.log(response.data);
-        })
-        .catch(function (error) {
-            console.log(error);
-        }).then(function() {
-        
-    }); 
-}
-
-function getRecipe(id){
-    axios.get(`http://localhost:8000/recipes/${id}`)
-        .then(function(response) {
-            //console.log(response.data);
-            Object.assign(recipeForm, response.data);
-        })
-        .catch(function (error) {
-            console.log(error);
-        }).then(function() {
-        
-    });
 }
 
 function deleteProduct(id){
     axios.delete(`http://localhost:8000/products/${id}`)
         .then(function(response) {
             console.log(response.data);
-            getProduct();
+            window.location.reload();
         })
-        .catch(function (error) {   
-                     
+        .catch(function (error) {
             console.log(error);
         }).then(function() {
         
@@ -136,7 +103,7 @@ function setActionPointer(id, action){
         <div class="row align-items-center justify-content-left bg-light p-1">
             <div class="col">
                 <div class="collapse" id="collapse1">
-                    <CreateProduct :companies="props.companies" @refresh-product="getProduct()"/>
+                    <CreateProduct :companies="props.companies"/>
                 </div>
             </div>
         </div>
@@ -179,61 +146,46 @@ function setActionPointer(id, action){
                                 {{value.name}}    
                             </span>
                             <div>
-                                <label style="color: black">Product Type: </label>{{value.is_raw_material ? " Raw Material" : " Sellable Product"}}
-                            </div>
+                                <label>Code: </label>{{" " + value.code}}
+                            </div>                            
+                            <div>
+                                <label>Product Type: </label>{{value.is_raw_material ? " Raw Material" : " Sellable Product"}}
+                            </div>                            
+                            <div>
+                                <label>Is Active: </label>{{value.is_active ? " Yes" : " No"}}
+                            </div>                            
                             <div>
                                 <label>Unit of measure: </label>{{" " + value.uom_name}}
                             </div>
                         </div>
                         <div class="col">
-                            <!-- <a class="btn btn-primary m-1" @click="getDetail(value.ID)">Detail</a> -->
-                            <a class="btn btn-primary m-1" @click="getPriceList(value.ID); setActionPointer(value.ID, 'price');">Price List</a>
-                            <template v-if="value.recipe_id">
-                                <a class="btn btn-primary m-1" @click="getRecipe(value.ID); setActionPointer(value.ID, 'recipe');">Recipe</a>                
-                            </template>
-                            <a class="btn btn-primary m-1" @click="setActionPointer(value.ID, 'edit');">Edit</a>
+                            <a class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#onhand' + value.ID" @click="getDetails(value.ID)">Stocks Onhand</a>
+                            <button class="btn btn-primary m-1" :style="{disabled: (value.is_raw_material == true)}"
+                                data-bs-toggle="collapse" :data-bs-target="'#price' + value.ID" @click="getDetails(value.ID)">Price List</button>
+                            <a class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#edit' + value.ID">Edit</a>
                             <a class="btn btn-danger m-1" @click="deleteProduct(value.ID)" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Delete</a>
                         </div>
                     </div>
-                    <template v-if="actionPointer.id==value.ID">
-                        <template v-if="actionPointer.action=='price'">
-                            <div class="row">
-                                <div class="card m-2">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Price List</h5>
-                                        <p class="card-text"></p>
-                                    </div>
-                                </div>
-                            </div>   
-                        </template>
-                        <template v-else-if="actionPointer.action=='recipe'">
-                            <div class="row">
-                                <div class="card m-2">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Recipe</h5>
-                                        <p class="card-text">Methods:</p>
-                                    </div>
-                                </div>
-                            </div>  
-                        </template> 
-                        <template v-else-if="actionPointer.action=='edit'">
-                            <div class="row">
-                                <div class="card m-2">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Edit Form</h5>
-                                        <p class="card-text"></p>
-                                    </div>
-                                </div>
-                            </div>  
-                        </template>                    
-                    </template>
+                    <div class="row align-items-center">
+                        <div class="collapse" :id="'onhand' + value.ID">
+                            <StockOnhands :stockOnhands="productOnhands[value.ID]"/>
+                        </div>
+                        <div class="collapse" :id="'price' + value.ID">
+                            <Prices :priceList="productPrices[value.ID]"/>
+                        </div>
+                        <div class="collapse" :id="'edit' + value.ID">
+                            Edit
+                            <!-- <EditRecipe :companies="props.companies" :products="getRawMaterials()" :recipeForm="value" :details="recipeDetails[value.ID]"/> -->
+                        </div>                        
+                    </div>                
                 </div>
             </li>            
         </template>
     </ul>
 
-    <!-- <PopupModal /> -->
-
+    <!-- <template v-if="true">
+        <PopupModal />
+    </template> -->
 </template>
 
 <style>

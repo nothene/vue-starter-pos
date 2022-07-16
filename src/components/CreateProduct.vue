@@ -46,6 +46,7 @@ function createProduct(){
             uom_name: '',
             recipe_id: 1  
         });
+        window.location.reload();
     })
     .catch(function (error) {
         console.log(error);

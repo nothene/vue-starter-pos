@@ -4,6 +4,10 @@ import Products from './components/Products.vue';
 import Recipes from './components/Recipes.vue';
 import Home from './components/Home.vue';
 import NotFound from './components/NotFound.vue';
+import Production from './components/Production.vue';
+import Prices from './components/Prices.vue';
+import Purchase from './components/Purchase.vue';
+import Sell from './components/Sell.vue';
 import axios from 'axios';
 
 let companies = reactive([]);
@@ -13,6 +17,10 @@ const routes =
     '/': {name: 'Home', component: Home},
     '/products': {name: 'Products', component: Products},
     '/recipes':  {name: 'Recipes', component: Recipes},
+    '/prices':  {name: 'Prices', component: Prices},
+    '/production':  {name: 'Production', component: Production},
+    '/purchase':  {name: 'Purchase', component: Purchase},
+    '/sell':  {name: 'Sell', component: Sell},
 };
 
 const currentPath = ref(window.location.hash);
