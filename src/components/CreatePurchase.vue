@@ -32,7 +32,7 @@ let rawMaterials = computed(() => {
 
 function addProduct(){
     purchaseForm['details'].push({
-        raw_material_id: 1,
+        raw_material_id: 0,
         qty: 0,
         price: 0,
         // in fractions, take care to convert
@@ -82,7 +82,7 @@ async function createPurchase(){
             window.location.reload();
         }).catch(function(error){
             console.log(error.data);
-            alert(error.response.data);
+            alert(error.response.data.message);
         });
 }
 

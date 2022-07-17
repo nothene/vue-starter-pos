@@ -48,9 +48,7 @@ function getPriceList(id){
         })
         .catch(function (error) {
             console.log(error);
-        }).then(function() {
-        
-    }); 
+        }); 
 }
 
 function deleteRecipe(id){
@@ -60,10 +58,9 @@ function deleteRecipe(id){
             window.location.reload();
         })
         .catch(function (error) {
+            alert(error.response.data.message);
             console.log(error);
-        }).then(function() {
-        
-    });     
+        });     
 }
 
 function getRecipeDetail(id){

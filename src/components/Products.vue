@@ -92,10 +92,18 @@ function deleteProduct(id){
             window.location.reload();
         })
         .catch(function (error) {
-            console.log(error);
+            alert(JSON.stringify(error.response.data.message));
+            console.log(error.response.data.message);
         }).then(function() {
         
     });
+}
+
+function passFilter(value){
+    if((filters['companyID'] == 0 || filters['companyID'] == value.company_id) && (value.is_raw_material == filters['isRaw'] || (filters['isRaw'] == 2 ? true : false))){
+        return true;
+    }
+    return false;
 }
 
 </script>
@@ -157,7 +165,7 @@ function deleteProduct(id){
 
     <ul class="list-group">
         <template v-for="(value, index) in props.products" :key="value.ID" >
-            <li v-if="(filters['companyID'] == 0 || filters['companyID'] == value.company_id) && (value.is_raw_material == filters['isRaw'] || (filters['isRaw'] == 2 ? true : false))" class="list-group-item">
+            <li v-if="passFilter(value)" class="list-group-item">
                 <div class="row align-items-center">
                     <div class="row">
                         <div class="col">

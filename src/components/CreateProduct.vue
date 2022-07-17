@@ -50,7 +50,7 @@ function createProduct(){
     })
     .catch(function (error) {
         console.log(error);
-        alert(error);
+        alert(JSON.stringify(error.response.data.message));
     }).then(function() {
     
     });
