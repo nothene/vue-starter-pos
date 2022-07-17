@@ -69,7 +69,7 @@ async function createProduction(){
                     </select>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group mb-3"></div>
+                    <div class="input-group"></div>
                         <label class="form-label">Product</label>
                         <select class="form-select" v-model="productionForm.product_id">
                             <option v-for="(value, index) in products" :key="value.ID" :value="value.ID">
@@ -92,9 +92,10 @@ async function createProduction(){
                     <div>
                         <template v-if="publishAt == 'select'">
                             <label class="form-label">Date & Time</label>
-                            <input type="date" class="form-control" v-model="productionForm['date']">     
-                            <input type="time" class="form-control" v-model="productionForm['time']">        
-                            <label class="form-label">UTC+7</label>
+                            <div class="input-group mb-3">
+                            <input type="date" class="form-control" v-model="productionForm['date']">
+                            <input type="time" class="form-control" v-model="productionForm['time']">
+                            </div>                            
                         </template> 
                     </div>                  
                 </div>                

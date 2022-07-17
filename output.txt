@@ -1,0 +1,119 @@
+diff --git a/src/components/CreateProduction.vue b/src/components/CreateProduction.vue
+index 85e18d1..7e2c163 100644
+--- a/src/components/CreateProduction.vue
++++ b/src/components/CreateProduction.vue
+@@ -69,7 +69,7 @@ async function createProduction(){
+                     </select>
+                 </div>
+                 <div class="mb-3">
+-                    <div class="input-group mb-3"></div>
++                    <div class="input-group"></div>
+                         <label class="form-label">Product</label>
+                         <select class="form-select" v-model="productionForm.product_id">
+                             <option v-for="(value, index) in products" :key="value.ID" :value="value.ID">
+@@ -92,9 +92,10 @@ async function createProduction(){
+                     <div>
+                         <template v-if="publishAt == 'select'">
+                             <label class="form-label">Date & Time</label>
+-                            <input type="date" class="form-control" v-model="productionForm['date']">     
+-                            <input type="time" class="form-control" v-model="productionForm['time']">        
+-                            <label class="form-label">UTC+7</label>
++                            <div class="input-group mb-3">
++                            <input type="date" class="form-control" v-model="productionForm['date']">
++                            <input type="time" class="form-control" v-model="productionForm['time']">
++                            </div>                            
+                         </template> 
+                     </div>                  
+                 </div>                
+diff --git a/src/components/Prices.vue b/src/components/Prices.vue
+index ccfef9f..5a99cd9 100644
+--- a/src/components/Prices.vue
++++ b/src/components/Prices.vue
+@@ -26,6 +26,7 @@ async function publishPrice(){
+     await axios.post(`http://localhost:8000/prices`, priceForm)
+     .then(function(response) {
+         console.log(response);
++        window.location.reload();
+     })
+     .catch(function (error) {
+         console.log(error);
+@@ -49,24 +50,29 @@ setInterval(() => {
+ <template>
+     <div class="card m-2">
+         <div class="card-body">
+-            <div class="lead card-title">Publish Price</div>
+-            <span>Company Name</span>            
+-            <select class="form-select" v-model="priceForm['company_id']">
+-                <option v-for="(value, index) in companiesMap" :key="index" :value="Number(index)">
+-                    {{value}}
+-                </option>
+-            </select>            
+-            <span>Publish price at: {{publishAt == "now" ? currentDateTime.date.toLocaleString() : "manually selected below"}}</span>            
+-            <select class="form-select" v-model="publishAt">
+-                <option value="now" selected>Now</option>
+-                <option value="select">Select Date</option>
+-            </select>
+-            <template v-if="publishAt == 'select'">
+-                <label class="form-label">Date & Time</label>
+-                <input type="date" class="form-control" v-model="priceForm['date']">     
+-                <input type="time" v-model="priceForm['time']">        
+-                <label class="form-label">UTC+7</label>
+-            </template>
++            <div class="mb-3">
++                <div class="lead card-title">Publish Price</div>
++                <label class="form-label">Company Name</label>            
++                <select class="form-select" v-model="priceForm['company_id']">
++                    <option v-for="(value, index) in companiesMap" :key="index" :value="Number(index)">
++                        {{value}}
++                    </option>
++                </select>            
++            </div>
++            <div class="mb-3">
++                <label class="form-label">Publish price at: </label>  
++                <select class="form-select mb-3" v-model="publishAt">
++                    <option value="now" selected>Now</option>
++                    <option value="select">Select Date</option>
++                </select>
++                <div v-if="publishAt == 'select'">
++                    <label class="form-label">Date & Time</label>
++                    <div class="input-group mb-3">    
++                        <input type="date" class="form-control" v-model="priceForm['date']">     
++                        <input type="time" class="form-control" v-model="priceForm['time']">                    
++                    </div>
++                </div>                
++            </div>
+             <label class="form-label">Price</label>
+             <div class="input-group mb-3">                
+                 <span class="input-group-text">Rp</span>
+diff --git a/src/components/Production.vue b/src/components/Production.vue
+index a2d3096..4f738a5 100644
+--- a/src/components/Production.vue
++++ b/src/components/Production.vue
+@@ -10,6 +10,18 @@ let props = defineProps([
+     'recipes'
+ ]);
+ 
++let productsMap = computed(() => {
++    if(!props.companies){
++        return null;
++    }
++    let arr = JSON.parse(JSON.stringify(props.products));
++    let a = {};
++    for(var i = 0; i < arr.length; i++){
++        a[arr[i].ID] = arr[i].name;
++    }    
++    return a;    
++})
++
+ let productions = reactive([]);
+ let showCreate = ref(false);
+ 
+@@ -99,7 +111,7 @@ watchEffect(async () => {
+             <template v-for="(value, index) in productions[0]" :key="value.ID">
+                 <tr>
+                     <th scope="row">{{value.ID}}</th>
+-                    <td>{{recipesMap[value.recipe_id]}}</td>    
++                    <td>{{productsMap[value.product_id]}}</td>    
+                     <td>{{companiesMap[value.company_id]}}</td>
+                     <td>{{value.production_date}}</td>                                              
+                     <td>{{value.qty_produced}}</td>

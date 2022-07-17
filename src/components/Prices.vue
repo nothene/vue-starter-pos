@@ -26,6 +26,7 @@ async function publishPrice(){
     await axios.post(`http://localhost:8000/prices`, priceForm)
     .then(function(response) {
         console.log(response);
+        window.location.reload();
     })
     .catch(function (error) {
         console.log(error);
@@ -49,24 +50,29 @@ setInterval(() => {
 <template>
     <div class="card m-2">
         <div class="card-body">
-            <div class="lead card-title">Publish Price</div>
-            <span>Company Name</span>            
-            <select class="form-select" v-model="priceForm['company_id']">
-                <option v-for="(value, index) in companiesMap" :key="index" :value="Number(index)">
-                    {{value}}
-                </option>
-            </select>            
-            <span>Publish price at: {{publishAt == "now" ? currentDateTime.date.toLocaleString() : "manually selected below"}}</span>            
-            <select class="form-select" v-model="publishAt">
-                <option value="now" selected>Now</option>
-                <option value="select">Select Date</option>
-            </select>
-            <template v-if="publishAt == 'select'">
-                <label class="form-label">Date & Time</label>
-                <input type="date" class="form-control" v-model="priceForm['date']">     
-                <input type="time" v-model="priceForm['time']">        
-                <label class="form-label">UTC+7</label>
-            </template>
+            <div class="mb-3">
+                <div class="lead card-title">Publish Price</div>
+                <label class="form-label">Company Name</label>            
+                <select class="form-select" v-model="priceForm['company_id']">
+                    <option v-for="(value, index) in companiesMap" :key="index" :value="Number(index)">
+                        {{value}}
+                    </option>
+                </select>            
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Publish price at: </label>  
+                <select class="form-select mb-3" v-model="publishAt">
+                    <option value="now" selected>Now</option>
+                    <option value="select">Select Date</option>
+                </select>
+                <div v-if="publishAt == 'select'">
+                    <label class="form-label">Date & Time</label>
+                    <div class="input-group mb-3">    
+                        <input type="date" class="form-control" v-model="priceForm['date']">     
+                        <input type="time" class="form-control" v-model="priceForm['time']">                    
+                    </div>
+                </div>                
+            </div>
             <label class="form-label">Price</label>
             <div class="input-group mb-3">                
                 <span class="input-group-text">Rp</span>

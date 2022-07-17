@@ -10,6 +10,18 @@ let props = defineProps([
     'recipes'
 ]);
 
+let productsMap = computed(() => {
+    if(!props.companies){
+        return null;
+    }
+    let arr = JSON.parse(JSON.stringify(props.products));
+    let a = {};
+    for(var i = 0; i < arr.length; i++){
+        a[arr[i].ID] = arr[i].name;
+    }    
+    return a;    
+})
+
 let productions = reactive([]);
 let showCreate = ref(false);
 
@@ -99,7 +111,7 @@ watchEffect(async () => {
             <template v-for="(value, index) in productions[0]" :key="value.ID">
                 <tr>
                     <th scope="row">{{value.ID}}</th>
-                    <td>{{recipesMap[value.recipe_id]}}</td>    
+                    <td>{{productsMap[value.product_id]}}</td>    
                     <td>{{companiesMap[value.company_id]}}</td>
                     <td>{{value.production_date}}</td>                                              
                     <td>{{value.qty_produced}}</td>
