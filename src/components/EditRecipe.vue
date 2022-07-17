@@ -33,13 +33,17 @@ function uniqueCheck(arr){
 }
 
 function updateRecipe(){
+    if(props.details.length == 0){
+        alert("Ingredients is empty");
+        return;
+    }
     let fullRecipe = JSON.parse(JSON.stringify(props.recipeForm));
     fullRecipe['ingredients'] = JSON.parse(JSON.stringify(props.details));
     if(uniqueCheck(fullRecipe['ingredients'])){
         axios.put(`http://localhost:8000/recipes/${props.recipeForm.ID}`, fullRecipe)
         .then(function(response) {
             console.log(response.data);
-            window.location.reload();
+            //window.location.reload();
         })
         .catch(function (error) {
             console.log(error);
