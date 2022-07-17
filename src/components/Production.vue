@@ -49,12 +49,12 @@ let recipesMap = computed(() => {
     return a;
 });
 
-let sellables = computed(() => {
+let produceables = computed(() => {
     if(!props.products){
         return null;
     }    
     let arr = JSON.parse(JSON.stringify(props.products));
-    return arr.filter((x) => !x.is_raw_material);    
+    return arr.filter((x) => !x.is_raw_material && x.recipe_id);    
 })
 
 watchEffect(async () => {
@@ -92,7 +92,7 @@ watchEffect(async () => {
         <div class="row align-items-center justify-content-left bg-light p-1">
             <div class="col">
                 <div class="collapse" id="collapse1">
-                    <CreateProduction :recipesMap="recipesMap" :companies="companies" :products="sellables"/>
+                    <CreateProduction :recipesMap="recipesMap" :companies="companies" :products="produceables"/>
                 </div>
             </div>
         </div>

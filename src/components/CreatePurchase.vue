@@ -16,20 +16,6 @@ let purchaseForm = reactive({
     notes: ''
 });
 
-let rawMaterials = computed(() => {
-    if(props.products){
-        let arr = JSON.parse(JSON.stringify(props.products));
-        let a = [];
-        for(var i = 0; i < arr.length; i++){
-            if(arr[i].is_raw_material){
-                a.push(arr[i]);
-            }
-        }    
-        return a;
-    }
-    return null;
-});
-
 function addProduct(){
     purchaseForm['details'].push({
         raw_material_id: 0,
@@ -120,12 +106,12 @@ async function createPurchase(){
                 <input type="text" class="form-control" v-model="purchaseForm['notes']">
             </div>
             <div class="mb-3">
-                    <label class="form-label">Add Ingredients to Purchase</label>
+                    <label class="form-label">Add Products to Purchase</label>
                     <div v-for="(value, index) in purchaseForm['details']">
                         <div class="mb-2">
                             <div class="input-group">
                             <select class="form-select" v-model="purchaseForm['details'][index].raw_material_id">
-                                <option v-for="(value2, index2) in rawMaterials" :key="value2.ID" :value="value2.ID">
+                                <option v-for="(value2, index2) in products" :key="value2.ID" :value="value2.ID">
                                     {{value2.name}} {{'(' + value2.uom_name + ')'}}
                                 </option>
                             </select>

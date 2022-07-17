@@ -20,6 +20,14 @@ let productions = reactive([]);
 let purchase = reactive([]);
 let showCreate = ref(false);
 
+let purchaseable = computed(() => {
+    if(!props.products){
+        return null;
+    }    
+    let arr = JSON.parse(JSON.stringify(props.products));
+    return arr.filter((x) => (!x.is_raw_material && !x.recipe_id) || x.is_raw_material);
+})
+
 let companiesMap = computed(() => {
     if(!props.companies){
         return null;
@@ -78,7 +86,7 @@ watchEffect(async () => {
         <div class="row align-items-center justify-content-left bg-light p-1">
             <div class="col">
                 <div class="collapse" id="collapse1">
-                    <CreatePurchase :companiesMap="companiesMap" :products="products"/>
+                    <CreatePurchase :companiesMap="companiesMap" :products="purchaseable"/>
                 </div>
             </div>
         </div>

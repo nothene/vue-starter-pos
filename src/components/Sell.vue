@@ -35,8 +35,8 @@ let sellables = computed(() => {
         return null;
     }    
     let arr = JSON.parse(JSON.stringify(props.products));
-    return arr.filter((x) => !x.is_raw_material);    
-})
+    return arr.filter((x) => (!x.is_raw_material && !x.recipe_id) || (!x.is_raw_material && x.recipe_id));
+});
 
 watchEffect(async () => {
     await axios.get('http://localhost:8000/purchase').then(

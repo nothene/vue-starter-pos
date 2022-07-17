@@ -17,8 +17,7 @@ function updateProduct(){
         window.location.reload();
     })
     .catch(function (error) {
-        alert('Product update failed');
-        alert(error.data);
+        alert(error.response.data.message);
     }).then(function() {
     
     }); 
@@ -71,7 +70,7 @@ function updateProduct(){
             <div class="mb-3">
                 <label class="form-label">Recipe</label>
                 <select class="form-select" v-model="productForm.recipe_id">
-                    <option value="">Not available</option>
+                    <option :value="null">Not available</option>
                     <option v-for="(value, index) in props.recipes" :key="value.ID" :value="value.ID">
                         {{value.name}}
                     </option>

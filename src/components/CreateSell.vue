@@ -52,6 +52,10 @@ async function createSell(){
             arr.push(sellForm['details'][i]);
         }        
         sellForm['details'] = arr;
+        // transaction must set date and time
+        // transaction without a time will default to 00:00 (midnight at the start of the day)
+        // might conflict with price publish
+        sellForm['transaction_date'] = sellForm['date'] + " " + sellForm['time'];
     }
     //console.log(sellForm);
     await axios.post('http://localhost:8000/sell', sellForm)
@@ -67,8 +71,7 @@ async function createSell(){
             // })            
             window.location.reload();
         }).catch(function(error){
-            console.log(error.data);
-            alert(error.response.data);
+            alert(error.response.data.message);
         });
 }
 
@@ -88,7 +91,10 @@ async function createSell(){
             </div>
             <div class="mb-3">
                 <label class="form-label">Sell Date</label>           
-                <input type="date" class="form-control" v-model="sellForm['transaction_date']">        
+                <div class="input-group mb-3">                    
+                    <input type="date" class="form-control" v-model="sellForm['date']">
+                    <input type="time" class="form-control" v-model="sellForm['time']">
+                </div>
             </div>            
             <div class="mb-3">
                 <label class="form-label">Customer Name</label>
@@ -121,7 +127,7 @@ async function createSell(){
                 <input type="text" class="form-control" v-model="sellForm['notes']">
             </div> 
             <div class="mb-3">
-                    <label class="form-label">Add Ingredients to Sell</label>
+                    <label class="form-label">Add Products to Sell</label>
                     <div v-for="(value, index) in sellForm['details']">
                         <div class="mb-2">
                             <div class="input-group">

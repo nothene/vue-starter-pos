@@ -10,6 +10,25 @@ import Purchase from './components/Purchase.vue';
 import Sell from './components/Sell.vue';
 import axios from 'axios';
 
+// Retail Product
+// sellable dan purchaseable goods (e.g. soft drinks)
+// is not raw and does not have a recipe
+// !raw && !recipe
+
+// Homemade Product
+// sellable only goods (e.g. foods made by ourselves)
+// is not raw and have a recipe
+// !raw && recipe
+
+// Raw Product
+// purchaseable only good (e.g. truly raw materials -> egg, bihun, flour)
+// is raw and does not have a recipe
+// raw && !recipe
+
+// purchaseable -> retail, raw
+// sellable -> retail, homemade
+// produceable -> homemade
+
 let companies = reactive([]);
 let products = reactive([]);
 let recipes = reactive([]);

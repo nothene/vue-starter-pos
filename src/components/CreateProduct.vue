@@ -10,7 +10,7 @@ let productForm = reactive({
     is_raw_material: true,
     is_active: true,
     uom_name: '',
-    recipe_id: 1  
+    recipe_id: null  
 });
 
 let recipes = reactive([]);
@@ -44,7 +44,7 @@ function createProduct(){
             is_raw_material: true,
             is_active: true,
             uom_name: '',
-            recipe_id: 1  
+            recipe_id: null
         });
         window.location.reload();
     })
@@ -103,7 +103,7 @@ function createProduct(){
             <div class="mb-3">
                 <label class="form-label">Recipe</label>
                 <select class="form-select" v-model="productForm.recipe_id">
-                    <option value="">Not available</option>
+                    <option :value="null">Not available</option>
                     <option v-for="(value, index) in recipes[0]" :key="value.ID" :value="value.ID">
                         {{value.name}}
                     </option>
