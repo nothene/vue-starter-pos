@@ -35,6 +35,14 @@ let recipesMap = computed(() => {
         a[arr[i].ID] = arr[i].name;
     }    
     return a;
+});
+
+let sellables = computed(() => {
+    if(!props.products){
+        return null;
+    }    
+    let arr = JSON.parse(JSON.stringify(props.products));
+    return arr.filter((x) => !x.is_raw_material);    
 })
 
 watchEffect(async () => {
@@ -72,7 +80,7 @@ watchEffect(async () => {
         <div class="row align-items-center justify-content-left bg-light p-1">
             <div class="col">
                 <div class="collapse" id="collapse1">
-                    <CreateProduction :recipes="recipes" :companies="companies"/>
+                    <CreateProduction :recipesMap="recipesMap" :companies="companies" :products="sellables"/>
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@ import axios from 'axios';
 let productionForm = reactive({
     company_id: 1,
     production_date: '',
-    recipe_id: 1,
+    product_id: 1,
     qty_produced: 0,
     date: '',
     time: '',    
@@ -13,7 +13,8 @@ let productionForm = reactive({
 
 let props = defineProps([
     'companies',
-    'recipes'
+    'products',
+    'recipesMap'
 ]);
 
 let publishAt = ref("now");
@@ -34,7 +35,11 @@ async function createProduction(){
     } else {
         productionForm['production_date'] = productionForm['date'] + " " + productionForm['time'];
     }
-    console.log(productionForm);
+    if(productionForm.qty_produced <= 0){
+        alert("The produced quantity must be higher than zero.");
+        return;
+    }
+    //console.log(productionForm);
     await axios.post(`http://localhost:8000/productions`, productionForm)
     .then(function(response) {
         //console.log(response.data);
@@ -64,12 +69,13 @@ async function createProduction(){
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Recipe/Product</label>
-                    <select class="form-select" v-model="productionForm.recipe_id">
-                        <option v-for="(value, index) in recipes" :key="value.ID" :value="value.ID">
-                            {{value.name}}
-                        </option>
-                    </select>
+                    <div class="input-group mb-3"></div>
+                        <label class="form-label">Product</label>
+                        <select class="form-select" v-model="productionForm.product_id">
+                            <option v-for="(value, index) in products" :key="value.ID" :value="value.ID">
+                                {{value.name}}
+                            </option>
+                        </select>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Quantity</label>

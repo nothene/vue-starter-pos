@@ -122,7 +122,7 @@ async function createPurchase(){
                 <input type="text" class="form-control" v-model="purchaseForm['notes']">
             </div>
             <div class="mb-3">
-                    <label class="form-label">Add Ingredients</label>
+                    <label class="form-label">Add Ingredients to Purchase</label>
                     <div v-for="(value, index) in purchaseForm['details']">
                         <div class="mb-2">
                             <div class="input-group">
