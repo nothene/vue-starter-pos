@@ -46,12 +46,12 @@ function popProduct(){
 }
 
 async function createPurchase(){
-    let arr = []
+    let arr = [];
     let ok = true;
-    console.log(purchaseForm);
+    //console.log(purchaseForm);
     // regex is better
     for(var i = 0; i < purchaseForm['details'].length; i++){
-        if(purchaseForm['details'][i].qty < 0 || purchaseForm['details'][i].disc_1 < 0 || purchaseForm['details'][i].disc_2 < 0){
+        if(purchaseForm['details'][i].qty <= 0 || purchaseForm['details'][i].disc_1 < 0 || purchaseForm['details'][i].disc_2 < 0){
             ok = false;
             break;
         }
@@ -61,11 +61,9 @@ async function createPurchase(){
         return;
     } else{
         for(var i = 0; i < purchaseForm['details'].length; i++){
-            if(purchaseForm['details'][i].qty > 0){
-                purchaseForm['details'][i].disc_1 /= 100;
-                purchaseForm['details'][i].disc_2 /= 100;
-                arr.push(purchaseForm['details'][i]);
-            }
+            purchaseForm['details'][i].disc_1 /= 100;
+            purchaseForm['details'][i].disc_2 /= 100;
+            arr.push(purchaseForm['details'][i]);
         }        
         purchaseForm['details'] = arr;
     }
@@ -144,7 +142,7 @@ async function createPurchase(){
                             </div>          
                         </div>
                     </div>
-                    <span>{{purchaseForm['details']}}</span>
+                    <!-- <span>{{purchaseForm['details']}}</span> -->
                     <div>
                         <button class="btn btn-primary me-2" @click="addProduct()">Add Ingredient</button>
                         <button class="btn btn-danger" @click="popProduct()">Remove Last Ingredient</button>
