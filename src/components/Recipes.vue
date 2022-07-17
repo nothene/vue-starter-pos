@@ -7,22 +7,13 @@ import EditRecipe from './EditRecipe.vue';
 
 let recipes = reactive([]);
 let recipeDetails = reactive({});
-let companies = reactive([]);
 let showCreate = ref(false);
 
 let props = defineProps([
-    'companies', 'products'
+    'companies', 
+    'products'
 ]);
 
-let actionPointer = reactive({
-    id: 0,
-    action: ''
-});
-
-function setActionPointer(id, action){
-    actionPointer.id = id;
-    actionPointer.action = action;
-}
 
 watchEffect(async () => {
     await axios.get('http://localhost:8000/recipes')
@@ -99,6 +90,14 @@ function getRawMaterials(){
     }
 }
 
+let rawMaterials = computed(() => {
+    if(props.products){
+        let a = JSON.parse(JSON.stringify(props.products));
+        a = a.filter(x => x.is_raw_material);
+        return a;
+    }
+});
+
 </script>
 
 <template>
@@ -123,7 +122,7 @@ function getRawMaterials(){
         <div class="row align-items-center justify-content-left bg-light p-1">
             <div class="col">
                 <div class="collapse" id="collapse1">
-                    <CreateRecipe :companies="props.companies" :products="getRawMaterials()"/>
+                    <CreateRecipe :companies="props.companies" :products="rawMaterials"/>
                 </div>
             </div>
         </div>
@@ -137,8 +136,8 @@ function getRawMaterials(){
                     </span>
                 </div>
                 <div class="col">
-                    <a class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#details' + value.ID" @click="getRecipeDetail(value.ID); setActionPointer(value.ID, 'details')">Show Details</a>
-                    <a class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#edit' + value.ID" @click="getRecipeDetail(value.ID); setActionPointer(value.ID, 'edit')">Edit</a>
+                    <a class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#details' + value.ID" @click="getRecipeDetail(value.ID)">Show Details</a>
+                    <a class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#edit' + value.ID" @click="getRecipeDetail(value.ID)">Edit</a>
                     <a class="btn btn-danger m-1" @click="deleteRecipe(value.ID)">Delete</a>
                 </div>
             </div>
@@ -147,7 +146,7 @@ function getRawMaterials(){
                     <RecipeDetails :details="recipeDetails[value.ID]" :notes="value.notes"/>
                 </div>
                 <div class="collapse" :id="'edit' + value.ID">
-                    <EditRecipe :companies="props.companies" :products="getRawMaterials()" :recipeForm="value" :details="recipeDetails[value.ID]"/>
+                    <EditRecipe :companies="props.companies" :products="rawMaterials" :recipeForm="value" :details="recipeDetails[value.ID]"/>
                 </div>
             </div>
         </li>

@@ -118,7 +118,7 @@ function popIngredient(){
                     <button class="btn btn-primary" @click="addIngredient()">Add Ingredient</button>
                     <button class="btn btn-danger" @click="popIngredient()">Remove Last Ingredient</button>
                 </div>        
-                <button type="submit" class="btn btn-primary" @click="createRecipe(); $emit('refreshRecipe')">Submit</button>
+                <button type="submit" class="btn btn-primary" @click="createRecipe();">Submit</button>
         </div>
     </div>
 </template>

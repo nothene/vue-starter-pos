@@ -37,7 +37,8 @@ async function createProduction(){
     console.log(productionForm);
     await axios.post(`http://localhost:8000/productions`, productionForm)
     .then(function(response) {
-        console.log(response);
+        //console.log(response.data);
+        alert(response.data);
         window.location.reload();
     })
     .catch(function (error) {

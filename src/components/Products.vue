@@ -189,7 +189,7 @@ function print(){
                             </template>
                         </div>
                         <div class="collapse" :id="'edit' + value.ID">
-                            <!-- <EditProduct :companies="props.companies" :products="getRawMaterials()" :recipeForm="value" :details="recipeDetails[value.ID]"/> -->
+                            <EditProduct :companies="props.companies" :products="getRawMaterials()" :productForm="value" :details="recipeDetails[value.ID]"/> -->
                         </div>                        
                     </div>                
                 </div>
