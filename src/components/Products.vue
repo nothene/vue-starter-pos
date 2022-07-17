@@ -44,6 +44,18 @@ let companiesMap = computed(() => {
         a[arr[i].ID] = arr[i].name;
     }    
     return a;
+});
+
+let recipesMap = computed(() => {
+    if(!props.recipes){
+        return null;
+    }    
+    let arr = JSON.parse(JSON.stringify(props.recipes));
+    let a = {};
+    for(var i = 0; i < arr.length; i++){
+        a[arr[i].ID] = arr[i].name;
+    }    
+    return a;    
 })
 
 // watchEffect(async () => {
@@ -156,13 +168,19 @@ function deleteProduct(id){
                                 <label>Code: </label>{{" " + value.code}}
                             </div>                            
                             <div>
-                                <label>Product Type: </label>{{value.is_raw_material ? " Raw Material" : " Sellable Product"}}
+                                <label>Product Type: </label>{{value.is_raw_material ? " Raw Material" : " Sellable"}}
                             </div>                            
+                            <div v-if="value.color != null">
+                                <label>Color: </label>{{" " + value.color}}
+                            </div>                             
                             <div>
                                 <label>Is Active: </label>{{value.is_active ? " Yes" : " No"}}
                             </div>                            
                             <div>
-                                <label>Unit of measure: </label>{{" " + value.uom_name}}
+                                <label>Unit of Measure: </label>{{" " + value.uom_name}}
+                            </div>
+                            <div v-if="!value.is_raw_material">
+                                <label>Recipe: </label>{{" " + recipesMap[value.recipe_id]}}
                             </div>
                         </div>
                         <div class="col">

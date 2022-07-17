@@ -13,11 +13,12 @@ function updateProduct(){
     let curProductForm = JSON.parse(JSON.stringify(props.productForm));
     axios.put(`http://localhost:8000/products/${curProductForm.ID}`, curProductForm)
     .then(function(response) {
-        alert(response);            
+        alert(response.data);            
         window.location.reload();
     })
     .catch(function (error) {
-        console.log(error);
+        alert('Product update failed');
+        alert(error.data);
     }).then(function() {
     
     }); 
