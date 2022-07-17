@@ -26,6 +26,7 @@ let showCreate = ref(false);
 let filters = reactive({
     companyID: 0,
     isRaw: 2,
+    hasRecipe: 2,
 });
 
 let props = defineProps([
@@ -100,7 +101,10 @@ function deleteProduct(id){
 }
 
 function passFilter(value){
-    if((filters['companyID'] == 0 || filters['companyID'] == value.company_id) && (value.is_raw_material == filters['isRaw'] || (filters['isRaw'] == 2 ? true : false))){
+    if((filters['companyID'] == value.company_id || filters['companyID'] == 0) 
+        && (value.is_raw_material == filters['isRaw'] || (filters['isRaw'] == 2 ? true : false))
+        && ((value.recipe_id ? true : false) == filters['hasRecipe'] || (filters['hasRecipe'] == 2 ? true : false)))
+    {
         return true;
     }
     return false;
@@ -140,8 +144,9 @@ function passFilter(value){
         <div class="p-2">
             <div class="mb-1">
                 Filter by:
-                <span v-if="filters['companyID'] > 0">Company </span>
-                <span v-if="filters['isRaw'] < 2">Rawness</span>
+                <span v-if="filters['companyID'] > 0" class="badge bg-primary rounded-pill p-2 me-1">Company</span>
+                <span v-if="filters['isRaw'] < 2" class="badge bg-primary rounded-pill p-2 me-1">Is Raw</span>
+                <span v-if="filters['hasRecipe'] < 2" class="badge bg-primary rounded-pill p-2 me-1">Has Recipe</span>
             </div>
             <div class="p-1">
                 <span>Company Name:</span>
@@ -160,6 +165,14 @@ function passFilter(value){
                     <option value=1>Yes</option>
                 </select>
             </div>  
+            <div class="p-1">
+                <span>Has Recipe:</span>
+                <select class="form-select" v-model="filters['hasRecipe']">
+                    <option selected value=2>No Filter</option>
+                    <option value=0>No</option>
+                    <option value=1>Yes</option>
+                </select>
+            </div>            
         </div>      
     </div>        
 
@@ -192,13 +205,11 @@ function passFilter(value){
                             </div>
                         </div>
                         <div class="col">
-                            <a class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#onhand' + value.ID" @click="getDetails(value.ID)">Stocks Onhand</a>
+                            <button class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#onhand' + value.ID" @click="getDetails(value.ID)">Stocks Onhand</button>
                             <button class="btn btn-primary m-1" :class="{disabled: (value.is_raw_material == true)}"
-                                data-bs-toggle="collapse" :data-bs-target="'#priceList' + value.ID" @click="getDetails(value.ID); print()">Price List & Publish</button>                            
-                            <!-- <button class="btn btn-primary m-1" :class="{disabled: (value.is_raw_material == true)}"
-                                data-bs-toggle="collapse" :data-bs-target="'#pricePublish' + value.ID">Price Publish</button> -->
-                            <a class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#edit' + value.ID">Edit</a>
-                            <a class="btn btn-danger m-1" @click="deleteProduct(value.ID)" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Delete</a>
+                                data-bs-toggle="collapse" :data-bs-target="'#priceList' + value.ID" @click="getDetails(value.ID); print()">Price List & Publish</button>
+                            <button class="btn btn-primary m-1" data-bs-toggle="collapse" :data-bs-target="'#edit' + value.ID">Edit</button>
+                            <button class="btn btn-danger m-1" @click="deleteProduct(value.ID)" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Delete</button>
                         </div>
                     </div>
                     <div class="row align-items-center">
