@@ -93,7 +93,7 @@ async function createPurchase(){
 <template>
     <div class="card m-2">
         <div class="card-body">
-            <div class="card-title">Create Purchase</div>
+            <div class="card-title lead">Create Purchase</div>
             <div class="mb-3">
                 <label class="form-label">Company</label>
                 <select class="form-select" v-model="purchaseForm.company_id">
