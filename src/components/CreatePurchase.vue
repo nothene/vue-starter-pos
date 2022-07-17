@@ -7,6 +7,8 @@ let props = defineProps([
     'products',
 ]);
 
+let purchaseableType = ref([]);
+
 let purchaseForm = reactive({
     company_id: 1,
     transaction_date: '',
@@ -25,10 +27,12 @@ function addProduct(){
         disc_1: 0,
         disc_2: 0
     });
+    purchaseableType.push('raw');
 }
 
 function popProduct(){
     purchaseForm['details'].pop();
+    purchaseableType.pop();
 }
 
 async function createPurchase(){
@@ -110,13 +114,32 @@ async function createPurchase(){
                     <div v-for="(value, index) in purchaseForm['details']">
                         <div class="mb-2">
                             <div class="input-group">
-                            <select class="form-select" v-model="purchaseForm['details'][index].raw_material_id">
-                                <option v-for="(value2, index2) in products" :key="value2.ID" :value="value2.ID">
-                                    {{value2.name}} {{'(' + value2.uom_name + ')'}}
-                                </option>
-                            </select>
-                                <label class="input-group-text">Quantity</label>
-                                <input type="number" class="form-control" v-model="purchaseForm['details'][index].qty">                                
+                                <label class="input-group-text">Type</label>
+                                <select class="form-select" v-model="purchaseableType[index]">
+                                    <option value="retail">Retail</option>
+                                    <option value="raw" selected>Raw Ingredient</option>
+                                </select>
+                                <label class="input-group-text">Name</label>
+                                <template v-if="purchaseableType[index] == 'raw'">
+                                    <select class="form-select" v-model="purchaseForm['details'][index].raw_material_id">
+                                        <template v-for="(value2, index2) in products" :key="value2.ID">
+                                            <option v-if="value2.is_raw_material" :value="value2.ID">
+                                                {{value2.name}} {{'(' + value2.uom_name + ')'}}
+                                            </option>
+                                        </template>
+                                    </select>
+                                </template>
+                                <template v-else>
+                                    <select class="form-select" v-model="purchaseForm['details'][index].raw_material_id">
+                                        <template v-for="(value3, index3) in products" :key="value3.ID">
+                                            <option v-if="!value3.is_raw_material && !value3.recipe_id" :value="value3.ID">
+                                                {{value3.name}} {{'(' + value3.uom_name + ')'}}
+                                            </option>                                    
+                                        </template>
+                                    </select>                                
+                                </template>
+                                    <label class="input-group-text">Quantity</label>
+                                    <input type="number" class="form-control" v-model="purchaseForm['details'][index].qty">                                
                             </div>       
                             <div class="input-group mb-3">
                                 <label class="input-group-text">Price</label>
@@ -130,8 +153,8 @@ async function createPurchase(){
                     </div>
                     <!-- <span>{{purchaseForm['details']}}</span> -->
                     <div>
-                        <button class="btn btn-primary me-2" @click="addProduct()">Add Ingredient</button>
-                        <button class="btn btn-danger" @click="popProduct()">Remove Last Ingredient</button>
+                        <button class="btn btn-primary me-2" @click="addProduct()">Add Product</button>
+                        <button class="btn btn-danger" @click="popProduct()">Remove Last Product</button>
                     </div>
                 </div>     
                 <button type="submit" class="btn btn-primary" @click="createPurchase();">Submit</button>                             

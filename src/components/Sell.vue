@@ -35,7 +35,8 @@ let sellables = computed(() => {
         return null;
     }    
     let arr = JSON.parse(JSON.stringify(props.products));
-    return arr.filter((x) => (!x.is_raw_material && !x.recipe_id) || (!x.is_raw_material && x.recipe_id));
+    //return arr.filter((x) => (!x.is_raw_material && !x.recipe_id) || (!x.is_raw_material && x.recipe_id));
+    return arr.filter((x) => !x.is_raw_material);
 });
 
 watchEffect(async () => {
