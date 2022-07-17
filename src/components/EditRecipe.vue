@@ -42,8 +42,8 @@ function updateRecipe(){
     if(uniqueCheck(fullRecipe['ingredients'])){
         axios.put(`http://localhost:8000/recipes/${props.recipeForm.ID}`, fullRecipe)
         .then(function(response) {
-            console.log(response.data);
-            //window.location.reload();
+            alert(response.data);
+            window.location.reload();
         })
         .catch(function (error) {
             console.log(error);

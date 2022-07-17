@@ -18,7 +18,7 @@ let productForm = reactive({
     recipe_id: 1  
 });
 
-let products = reactive([]);
+//let products = reactive([]);
 let productPrices = reactive({});
 let productOnhands = reactive({});
 
@@ -29,7 +29,9 @@ let filters = reactive({
 });
 
 let props = defineProps([
-    'companies'
+    'companies',
+    'products',
+    'recipes',
 ]);
 
 let companiesMap = computed(() => {
@@ -44,17 +46,17 @@ let companiesMap = computed(() => {
     return a;
 })
 
-watchEffect(async () => {
-    await axios.get('http://localhost:8000/products')
-        .then(function(response) {
-            products.push(response.data);
-            //console.log(response.data);
-        })
-        .catch(function (error) {
-            console.log(error);
-        });      
-    }
-);
+// watchEffect(async () => {
+//     await axios.get('http://localhost:8000/products')
+//         .then(function(response) {
+//             products.push(response.data);
+//             //console.log(response.data);
+//         })
+//         .catch(function (error) {
+//             console.log(error);
+//         });      
+//     }
+// );
 
 async function getDetails(id){
     await axios.get(`http://localhost:8000/products/${id}`)
@@ -82,10 +84,6 @@ function deleteProduct(id){
         }).then(function() {
         
     });
-}
-
-function print(){
-    console.log(companiesMap.value);
 }
 
 </script>
@@ -146,7 +144,7 @@ function print(){
     </div>        
 
     <ul class="list-group">
-        <template v-for="(value, index) in products[0]" :key="value.ID" >
+        <template v-for="(value, index) in props.products" :key="value.ID" >
             <li v-if="(filters['companyID'] == 0 || filters['companyID'] == value.company_id) && (value.is_raw_material == filters['isRaw'] || (filters['isRaw'] == 2 ? true : false))" class="list-group-item">
                 <div class="row align-items-center">
                     <div class="row">
@@ -189,7 +187,7 @@ function print(){
                             </template>
                         </div>
                         <div class="collapse" :id="'edit' + value.ID">
-                            <EditProduct :companies="props.companies" :products="getRawMaterials()" :productForm="value" :details="recipeDetails[value.ID]"/> -->
+                            <EditProduct :companies="props.companies" :productForm="value" :recipes="props.recipes"/>
                         </div>                        
                     </div>                
                 </div>

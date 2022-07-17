@@ -79,17 +79,6 @@ function getRecipeDetail(id){
     });
 }
 
-function getRawMaterials(){
-    if(props.products){
-        let a = props.products;
-        //console.log('here', a.filter(x => x.is_raw_material));
-        a = a.filter(x => x.is_raw_material);
-        return a;
-    } else {
-        return [];
-    }
-}
-
 let rawMaterials = computed(() => {
     if(props.products){
         let a = JSON.parse(JSON.stringify(props.products));
